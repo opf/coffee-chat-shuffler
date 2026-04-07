@@ -29,7 +29,7 @@ export default function HistoryTab({ history, people, onDelete, openRecordId, on
         <Typography.Text strong>{record.label}</Typography.Text>
         <Tag>{record.groups.length} groups</Tag>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {new Date(record.createdAt).toLocaleDateString()}
+          {new Date(record.createdAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
         </Typography.Text>
       </Space>
     ),

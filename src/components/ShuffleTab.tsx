@@ -10,7 +10,6 @@ import {
   Tag,
   Typography,
   Alert,
-  message,
 } from 'antd';
 import { nanoid } from 'nanoid';
 import type { MonthRecord, Person, ShuffleGroup } from '../types';
@@ -47,14 +46,6 @@ export default function ShuffleTab({
 
   function handleShuffle() {
     setGroups(computeShuffle(people, groupSize, history));
-  }
-
-  function handleCopy() {
-    if (!groups) return;
-    const text = groups
-      .map((group, i) => `☕ Group ${i + 1}\n${group.memberIds.map((id) => personName(id, people)).join(', ')}`)
-      .join('\n\n');
-    navigator.clipboard.writeText(text).then(() => message.success('Copied to clipboard'));
   }
 
   function handleSave() {
@@ -135,8 +126,7 @@ export default function ShuffleTab({
             <Button type="primary" onClick={handleSave} disabled={!label.trim()}>
               Save as "{label}"
             </Button>
-            <Button onClick={handleCopy}>Copy as Markdown</Button>
-            <Button onClick={handleShuffle}>Re-shuffle</Button>
+<Button onClick={handleShuffle}>Re-shuffle</Button>
           </Space>
         </>
       )}

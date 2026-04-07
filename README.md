@@ -1,73 +1,48 @@
-# React + TypeScript + Vite
+# Coffee Chat Shuffler
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple tool for organising monthly coffee chats. Add your team members, shuffle them into groups, and track past groupings to avoid the same people being paired up month after month.
 
-Currently, two official plugins are available:
+Hosted on GitHub Pages — no backend, no accounts. Everything is stored in your browser's local storage.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **People management** — paste a list of names (one per line) to quickly add team members
+- **Smart shuffling** — groups are formed to minimise repeat pairings based on past history
+- **Configurable group size** — pick any size per shuffle
+- **History** — past shuffles are saved so repeat pairings can be avoided over time
+- **Copy as Markdown** — copy any shuffle result in a format ready to paste into a chat:
+  ```
+  ☕ Group 1
+  Alice, Bob, Carol
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+  ☕ Group 2
+  Dave, Eve, Frank
+  ```
 
-## Expanding the ESLint configuration
+## Usage
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Go to the **People** tab and paste your team members, one name per line
+2. Go to the **Shuffle** tab, set a group size, and hit **Shuffle**
+3. Happy with the result? Hit **Save** — it gets added to history and repeat pairings will be avoided in future shuffles
+4. Use **Copy as Markdown** to paste the groups directly into Slack, Teams, or wherever your team hangs out
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## How shuffling works
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Every saved shuffle is stored in history. From that history, the app builds a **pair frequency map** — a count of how many times each pair of people has ended up in the same group.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+When you hit Shuffle, it generates 500 random arrangements and scores each one by summing the pair frequencies of everyone within each group. The arrangement with the lowest total score wins, meaning the one that repeats the fewest past pairings.
+
+If no history exists yet, any random arrangement is equally valid. If the team is small enough that some overlap is unavoidable, the algorithm still picks the least-repeated option — repeats are preferred over deadlocks.
+
+## Development
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Deployment
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+The app deploys automatically to GitHub Pages on every push to `main` via the included GitHub Actions workflow.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+To enable it on a new repo: go to **Settings → Pages** and set the source to **GitHub Actions**.

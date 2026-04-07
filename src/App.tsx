@@ -1,12 +1,22 @@
 import { useRef, useState } from 'react';
 import { Button, ConfigProvider, Layout, Modal, Space, Tabs, Typography, theme, message } from 'antd';
+import type { CSSProperties } from 'react';
 import type { MonthRecord, Person } from './types';
 import { loadData, saveData } from './storage';
 import PeopleTab from './components/PeopleTab';
 import ShuffleTab from './components/ShuffleTab';
 import HistoryTab from './components/HistoryTab';
 
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
+
+const REPO_URL = 'https://github.com/opf/coffee-chat-shuffler';
+
+const footerStyle: CSSProperties = {
+  textAlign: 'center',
+  fontSize: 12,
+  color: 'rgba(0,0,0,0.35)',
+  padding: '12px 24px',
+};
 
 export default function App() {
   const [data, setData] = useState(loadData);
@@ -137,6 +147,13 @@ export default function App() {
         <Content style={{ padding: '24px', maxWidth: 900, margin: '0 auto', width: '100%' }}>
           <Tabs items={tabs} activeKey={activeTab} onChange={setActiveTab} />
         </Content>
+        <Footer style={footerStyle}>
+          Built on {new Date(__BUILD_TIME__).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}
+          {' · '}
+          <a href={`${REPO_URL}/commit/${__COMMIT_SHA__}`} target="_blank" rel="noreferrer">
+            {__COMMIT_SHA__}
+          </a>
+        </Footer>
       </Layout>
     </ConfigProvider>
   );

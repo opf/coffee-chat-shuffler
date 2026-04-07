@@ -42,7 +42,8 @@ export default function ShuffleTab({
   const [groups, setGroups] = useState<ShuffleGroup[] | null>(null);
   const [label, setLabel] = useState(defaultLabel());
 
-  const tooFew = people.length > 0 && people.length < groupSize * 2;
+  const activeCount = people.filter((p) => !p.archived).length;
+  const tooFew = activeCount > 0 && activeCount < groupSize * 2;
 
   function handleShuffle() {
     setGroups(computeShuffle(people, groupSize, history));
@@ -85,18 +86,18 @@ export default function ShuffleTab({
         <Button
           type="primary"
           onClick={handleShuffle}
-          disabled={people.length < 2}
+          disabled={activeCount < 2}
         >
           Shuffle
         </Button>
       </Space>
 
-      {people.length === 0 && (
-        <Alert message="Add people in the People tab first." type="info" showIcon />
+      {activeCount === 0 && (
+        <Alert message="No active people to shuffle. Add people in the People tab." type="info" showIcon />
       )}
       {tooFew && (
         <Alert
-          message={`Only ${people.length} people — consider a smaller group size.`}
+          message={`Only ${activeCount} active people — consider a smaller group size.`}
           type="warning"
           showIcon
         />

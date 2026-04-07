@@ -1,6 +1,7 @@
 export interface Person {
   id: string;
   name: string;
+  archived?: boolean;
 }
 
 export interface ShuffleGroup {

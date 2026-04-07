@@ -62,14 +62,15 @@ export function computeShuffle(
   history: MonthRecord[],
   attempts = 500,
 ): ShuffleGroup[] {
-  if (people.length === 0) return [];
+  const active = people.filter((p) => !p.archived);
+  if (active.length === 0) return [];
 
   const freq = buildPairFrequencies(history);
-  let bestGroups = splitIntoGroups(shuffleArray(people), groupSize);
+  let bestGroups = splitIntoGroups(shuffleArray(active), groupSize);
   let bestScore = scoreGroups(bestGroups, freq);
 
   for (let i = 1; i < attempts; i++) {
-    const shuffled = shuffleArray(people);
+    const shuffled = shuffleArray(active);
     const groups = splitIntoGroups(shuffled, groupSize);
     const score = scoreGroups(groups, freq);
     if (score < bestScore) {

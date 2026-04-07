@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Input, List, Typography, Space, Tag, Popconfirm } from 'antd';
+import { Button, Collapse, Input, List, Typography, Space, Tag, Popconfirm } from 'antd';
 import { nanoid } from 'nanoid';
 import type { Person } from '../types';
 
@@ -10,6 +10,9 @@ interface Props {
 
 export default function PeopleTab({ people, onChange }: Props) {
   const [text, setText] = useState('');
+
+  const active = people.filter((p) => !p.archived);
+  const archived = people.filter((p) => p.archived);
 
   function handleAdd() {
     const names = text
@@ -30,6 +33,14 @@ export default function PeopleTab({ people, onChange }: Props) {
 
     onChange([...people, ...toAdd]);
     setText('');
+  }
+
+  function handleArchive(id: string) {
+    onChange(people.map((p) => (p.id === id ? { ...p, archived: true } : p)));
+  }
+
+  function handleUnarchive(id: string) {
+    onChange(people.map((p) => (p.id === id ? { ...p, archived: false } : p)));
   }
 
   function handleRemove(id: string) {
@@ -61,23 +72,26 @@ export default function PeopleTab({ people, onChange }: Props) {
 
       <div>
         <Typography.Title level={5} style={{ marginBottom: 8 }}>
-          Current people{' '}
-          <Tag color="blue">{people.length}</Tag>
+          Active <Tag color="blue">{active.length}</Tag>
         </Typography.Title>
-        {people.length === 0 ? (
-          <Typography.Text type="secondary">No people added yet.</Typography.Text>
+        {active.length === 0 ? (
+          <Typography.Text type="secondary">No active people yet.</Typography.Text>
         ) : (
           <List
             size="small"
             bordered
-            dataSource={people}
+            dataSource={active}
             renderItem={(person) => (
               <List.Item
                 actions={[
+                  <Button type="text" size="small" onClick={() => handleArchive(person.id)}>
+                    Archive
+                  </Button>,
                   <Popconfirm
-                    title="Remove this person?"
+                    title="Permanently remove this person?"
+                    description="This also deletes their pairing history, which may cause repeat groups in future shuffles. Consider archiving instead."
                     onConfirm={() => handleRemove(person.id)}
-                    okText="Remove"
+                    okText="Remove anyway"
                     cancelText="Cancel"
                   >
                     <Button type="text" danger size="small">
@@ -92,6 +106,48 @@ export default function PeopleTab({ people, onChange }: Props) {
           />
         )}
       </div>
+
+      {archived.length > 0 && (
+        <Collapse
+          size="small"
+          items={[{
+            key: 'archived',
+            label: (
+              <Space>
+                <span>Archived</span>
+                <Tag>{archived.length}</Tag>
+              </Space>
+            ),
+            children: (
+              <List
+                size="small"
+                dataSource={archived}
+                renderItem={(person) => (
+                  <List.Item
+                    actions={[
+                      <Button type="text" size="small" onClick={() => handleUnarchive(person.id)}>
+                        Unarchive
+                      </Button>,
+                      <Popconfirm
+                        title="Remove this person?"
+                        onConfirm={() => handleRemove(person.id)}
+                        okText="Remove"
+                        cancelText="Cancel"
+                      >
+                        <Button type="text" danger size="small">
+                          Remove
+                        </Button>
+                      </Popconfirm>,
+                    ]}
+                  >
+                    <Typography.Text type="secondary">{person.name}</Typography.Text>
+                  </List.Item>
+                )}
+              />
+            ),
+          }]}
+        />
+      )}
     </Space>
   );
 }

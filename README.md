@@ -7,6 +7,7 @@ Hosted on GitHub Pages — no backend, no accounts. Everything is stored in your
 ## Features
 
 - **People management** — paste a list of names (one per line) to quickly add team members
+- **Archiving** — archive people who are temporarily out (e.g. on leave) so they are excluded from shuffles but their history is preserved
 - **Smart shuffling** — groups are formed to minimise repeat pairings based on past history
 - **Configurable group size** — pick any size per shuffle
 - **History** — past shuffles are saved so repeat pairings can be avoided over time
@@ -25,6 +26,8 @@ Hosted on GitHub Pages — no backend, no accounts. Everything is stored in your
 2. Go to the **Shuffle** tab, set a group size, and hit **Shuffle**
 3. Happy with the result? Hit **Save** — it gets added to history and repeat pairings will be avoided in future shuffles
 4. Use **Copy as Markdown** to paste the groups directly into Slack, Teams, or wherever your team hangs out
+
+When someone leaves the team, prefer **archiving** them over removing them. Removing a person permanently erases their pairing history, which may cause the algorithm to form previously seen groups. Archived people are excluded from future shuffles but their history is still taken into account.
 
 ## How shuffling works
 

@@ -10,6 +10,7 @@ interface Props {
 
 export default function PeopleTab({ people, onChange }: Props) {
   const [text, setText] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const active = people.filter((p) => !p.archived);
   const archived = people.filter((p) => p.archived);
@@ -45,6 +46,16 @@ export default function PeopleTab({ people, onChange }: Props) {
 
   function handleRemove(id: string) {
     onChange(people.filter((p) => p.id !== id));
+  }
+
+  function handleRename(id: string, nextName: string) {
+    const trimmed = nextName.trim();
+    if (!trimmed) return;
+    const clash = people.some(
+      (p) => p.id !== id && p.name.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (clash) return;
+    onChange(people.map((p) => (p.id === id ? { ...p, name: trimmed } : p)));
   }
 
   return (
@@ -84,6 +95,9 @@ export default function PeopleTab({ people, onChange }: Props) {
             renderItem={(person) => (
               <List.Item
                 actions={[
+                  <Button type="text" size="small" onClick={() => setEditingId(person.id)}>
+                    Edit
+                  </Button>,
                   <Button type="text" size="small" onClick={() => handleArchive(person.id)}>
                     Archive
                   </Button>,
@@ -100,7 +114,21 @@ export default function PeopleTab({ people, onChange }: Props) {
                   </Popconfirm>,
                 ]}
               >
-                {person.name}
+                <Typography.Text
+                  editable={{
+                    editing: editingId === person.id,
+                    onStart: () => setEditingId(person.id),
+                    onEnd: () => setEditingId(null),
+                    onCancel: () => setEditingId(null),
+                    onChange: (value) => {
+                      handleRename(person.id, value);
+                      setEditingId(null);
+                    },
+                    icon: <span style={{ display: 'none' }} />,
+                  }}
+                >
+                  {person.name}
+                </Typography.Text>
               </List.Item>
             )}
           />

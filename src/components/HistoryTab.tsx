@@ -1,6 +1,6 @@
 import { Button, Collapse, Empty, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import type { MonthRecord, Person } from '../types';
-import { findPerson } from '../matrix';
+import { matrixIdFor, findPerson } from '../matrix';
 
 interface Props {
   history: MonthRecord[];
@@ -8,6 +8,50 @@ interface Props {
   onDelete: (id: string) => void;
   openRecordId: string | null;
   onOpenChange: (id: string | null) => void;
+}
+
+type ComposerSegment =
+  | { type: 'user-pill'; text: string; resourceId: string }
+  | { type: 'plain'; text: string };
+
+function copyGroups(groups: MonthRecord['groups'], people: Person[]) {
+  const byId = new Map(people.map((p) => [p.id, p]));
+  const lookup = (id: string): Person => byId.get(id) ?? { id: '', name: id };
+
+  let markdown = '';
+  const segments: ComposerSegment[] = [];
+  groups.forEach((group, i) => {
+    const members = group.memberIds.map(lookup);
+    if (i) {
+      markdown += '\n\n';
+      segments.push({ type: 'plain', text: '\n\n' });
+    }
+    markdown += `☕ Group ${i + 1}\n${members.map((p) => p.name).join(', ')}`;
+    segments.push({ type: 'plain', text: `☕ Group ${i + 1}\n` });
+    members.forEach((person, j) => {
+      if (j) segments.push({ type: 'plain', text: ', ' });
+      segments.push({ type: 'user-pill', text: person.name, resourceId: matrixIdFor(person) || `@${person.name}:invalid` });
+    });
+  });
+
+  const textarea = document.createElement('textarea');
+  textarea.value = markdown;
+  textarea.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(textarea);
+  textarea.select();
+
+  const onCopy = (e: ClipboardEvent) => {
+    e.preventDefault();
+    e.clipboardData?.setData('application/x-element-composer', JSON.stringify(segments));
+    e.clipboardData?.setData('text/plain', markdown);
+  };
+  document.addEventListener('copy', onCopy);
+  const ok = document.execCommand('copy');
+  document.removeEventListener('copy', onCopy);
+  textarea.remove();
+
+  if (ok) message.success('Copied to clipboard');
+  else message.error('Failed copying to clipboard');
 }
 
 export default function HistoryTab({ history, people, onDelete, openRecordId, onOpenChange }: Props) {
@@ -37,13 +81,10 @@ export default function HistoryTab({ history, people, onDelete, openRecordId, on
           size="small"
           onClick={(e) => {
             e.stopPropagation();
-            const text = record.groups
-              .map((group, i) => `☕ Group ${i + 1}\n${group.memberIds.map((id) => personName(id, people)).join(', ')}`)
-              .join('\n\n');
-            navigator.clipboard.writeText(text).then(() => message.success('Copied to clipboard'));
+            copyGroups(record.groups, people);
           }}
         >
-          Copy as Markdown
+          Copy for Element
         </Button>
         <Popconfirm
           title="Delete this record?"

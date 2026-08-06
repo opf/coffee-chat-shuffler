@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Collapse, Input, List, Typography, Space, Tag, Popconfirm } from 'antd';
 import { nanoid } from 'nanoid';
 import type { Person } from '../types';
+import { matrixIdFor } from '../matrix';
 
 interface Props {
   people: Person[];
@@ -11,6 +12,7 @@ interface Props {
 export default function PeopleTab({ people, onChange }: Props) {
   const [text, setText] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingMatrixId, setEditingMatrixId] = useState<string | null>(null);
 
   const active = people.filter((p) => !p.archived);
   const archived = people.filter((p) => p.archived);
@@ -58,6 +60,11 @@ export default function PeopleTab({ people, onChange }: Props) {
     onChange(people.map((p) => (p.id === id ? { ...p, name: trimmed } : p)));
   }
 
+  function handleSetMatrixId(id: string, value: string) {
+    const trimmed = value.trim();
+    onChange(people.map((p) => (p.id === id ? { ...p, matrixId: trimmed || undefined } : p)));
+  }
+
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="large">
       <div>
@@ -95,9 +102,6 @@ export default function PeopleTab({ people, onChange }: Props) {
             renderItem={(person) => (
               <List.Item
                 actions={[
-                  <Button type="text" size="small" onClick={() => setEditingId(person.id)}>
-                    Edit
-                  </Button>,
                   <Button type="text" size="small" onClick={() => handleArchive(person.id)}>
                     Archive
                   </Button>,
@@ -114,21 +118,38 @@ export default function PeopleTab({ people, onChange }: Props) {
                   </Popconfirm>,
                 ]}
               >
-                <Typography.Text
-                  editable={{
-                    editing: editingId === person.id,
-                    onStart: () => setEditingId(person.id),
-                    onEnd: () => setEditingId(null),
-                    onCancel: () => setEditingId(null),
-                    onChange: (value) => {
-                      handleRename(person.id, value);
-                      setEditingId(null);
-                    },
-                    icon: <span style={{ display: 'none' }} />,
-                  }}
-                >
-                  {person.name}
-                </Typography.Text>
+                <Space size={10}>
+                  <Typography.Text
+                    editable={{
+                      editing: editingId === person.id,
+                      onStart: () => setEditingId(person.id),
+                      onEnd: () => setEditingId(null),
+                      onCancel: () => setEditingId(null),
+                      onChange: (value) => {
+                        handleRename(person.id, value);
+                        setEditingId(null);
+                      },
+                    }}
+                  >
+                    {person.name}
+                  </Typography.Text>
+                  <Typography.Text
+                    type="secondary"
+                    editable={{
+                      editing: editingMatrixId === person.id,
+                      tooltip: person.matrixId ? 'Edit Matrix ID' : 'Guessed — click to override',
+                      onStart: () => setEditingMatrixId(person.id),
+                      onEnd: () => setEditingMatrixId(null),
+                      onCancel: () => setEditingMatrixId(null),
+                      onChange: (value) => {
+                        handleSetMatrixId(person.id, value);
+                        setEditingMatrixId(null);
+                      },
+                    }}
+                  >
+                    {matrixIdFor(person)}
+                  </Typography.Text>
+                </Space>
               </List.Item>
             )}
           />

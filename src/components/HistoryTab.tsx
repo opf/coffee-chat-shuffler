@@ -1,5 +1,6 @@
 import { Button, Collapse, Empty, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import type { MonthRecord, Person } from '../types';
+import { findPerson } from '../matrix';
 
 interface Props {
   history: MonthRecord[];
@@ -7,10 +8,6 @@ interface Props {
   onDelete: (id: string) => void;
   openRecordId: string | null;
   onOpenChange: (id: string | null) => void;
-}
-
-function personName(id: string, people: Person[]): string {
-  return people.find((p) => p.id === id)?.name ?? id;
 }
 
 export default function HistoryTab({ history, people, onDelete, openRecordId, onOpenChange }: Props) {
@@ -79,7 +76,7 @@ export default function HistoryTab({ history, people, onDelete, openRecordId, on
             <br />
             <Space wrap style={{ marginTop: 4 }}>
               {group.memberIds.map((id) => (
-                <Tag key={id}>{personName(id, people)}</Tag>
+                <Tag key={id}>{findPerson(id, people).name}</Tag>
               ))}
             </Space>
           </div>

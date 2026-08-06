@@ -14,6 +14,7 @@ import {
 import { nanoid } from 'nanoid';
 import type { MonthRecord, Person, ShuffleGroup } from '../types';
 import { computeShuffle } from '../shuffle';
+import { findPerson } from '../matrix';
 
 interface Props {
   people: Person[];
@@ -25,10 +26,6 @@ interface Props {
 
 function defaultLabel(): string {
   return new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' });
-}
-
-function personName(id: string, people: Person[]): string {
-  return people.find((p) => p.id === id)?.name ?? id;
 }
 
 export default function ShuffleTab({
@@ -107,7 +104,7 @@ export default function ShuffleTab({
                   <Space direction="vertical" size={4} style={{ width: '100%' }}>
                     {group.memberIds.map((id) => (
                       <Tag key={id} style={{ margin: 0 }}>
-                        {personName(id, people)}
+                        {findPerson(id, people).name}
                       </Tag>
                     ))}
                   </Space>

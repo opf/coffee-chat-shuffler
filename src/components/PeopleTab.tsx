@@ -118,10 +118,13 @@ export default function PeopleTab({ people, onChange }: Props) {
                   </Popconfirm>,
                 ]}
               >
-                <Space size={10}>
+                <Space size={10} align="bottom" style={{ minHeight: 24, maxHeight: 24 }}>
                   <Typography.Text
+                    style={{ width: 200 }}
+                    ellipsis
                     editable={{
                       editing: editingId === person.id,
+                      autoSize: { maxRows: 1 },
                       onStart: () => setEditingId(person.id),
                       onEnd: () => setEditingId(null),
                       onCancel: () => setEditingId(null),
@@ -135,8 +138,11 @@ export default function PeopleTab({ people, onChange }: Props) {
                   </Typography.Text>
                   <Typography.Text
                     type="secondary"
+                    style={{ width: 300 }}
+                    ellipsis
                     editable={{
                       editing: editingMatrixId === person.id,
+                      autoSize: { maxRows: 1 },
                       tooltip: person.matrixId ? 'Edit Matrix ID' : 'Guessed — click to override',
                       onStart: () => setEditingMatrixId(person.id),
                       onEnd: () => setEditingMatrixId(null),

@@ -41,7 +41,7 @@ export default function PeopleTab({ people, onChange }: Props) {
   }
 
   function handleUnarchive(id: string) {
-    onChange(people.map((p) => (p.id === id ? { ...p, archived: false } : p)));
+    onChange(people.map((p) => (p.id === id ? { ...p, archived: undefined } : p)));
   }
 
   function handleRemove(id: string) {

@@ -118,7 +118,7 @@ export default function PeopleTab({ people, onChange }: Props) {
                   </Popconfirm>,
                 ]}
               >
-                <Space size={10} align="bottom" style={{ minHeight: 24, maxHeight: 24 }}>
+                <Space size={10} align="start" style={{ minHeight: 24, maxHeight: 24 }}>
                   <Typography.Text
                     style={{ width: 200 }}
                     ellipsis

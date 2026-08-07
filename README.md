@@ -11,7 +11,8 @@ Hosted on GitHub Pages — no backend, no accounts. Everything is stored in your
 - **Smart shuffling** — groups are formed to minimise repeat pairings based on past history
 - **Configurable group size** — pick any size per shuffle
 - **History** — past shuffles are saved so repeat pairings can be avoided over time
-- **Copy as Markdown** — copy any shuffle result in a format ready to paste into a chat:
+- **Matrix IDs** — each person gets a Matrix ID, guessed from their name using OpenProject's convention (`@f.lastname:openproject.org`) and overridable per person. Domain name is currently hardcoded in file `src/matrix.ts` as `MATRIX_DOMAIN`.
+- **Copy for Element** — copy a saved shuffle with Matrix mentions when pasted into Element or other matrix client that supports it, or as plain markdown anywhere else:
   ```
   ☕ Group 1
   Alice, Bob, Carol
@@ -25,7 +26,9 @@ Hosted on GitHub Pages — no backend, no accounts. Everything is stored in your
 1. Go to the **People** tab and paste your team members, one name per line
 2. Go to the **Shuffle** tab, set a group size, and hit **Shuffle**
 3. Happy with the result? Hit **Save** — it gets added to history and repeat pairings will be avoided in future shuffles
-4. Use **Copy as Markdown** to paste the groups directly into Slack, Teams, or wherever your team hangs out
+4. On the **History** tab, use **Copy for Element** to paste a saved shuffle into Element as clickable mentions (plain markdown elsewhere)
+
+> **Note:** the Matrix mentions only paste as pills in **Chromium-based browsers** (Chromium, Vivaldi, [etc.](https://en.wikipedia.org/wiki/Chromium_(web_browser)#Browsers_based_on_Chromium)). This is a browser limitation with no known workaround.
 
 When someone leaves the team, prefer **archiving** them over removing them. Removing a person permanently erases their pairing history, which may cause the algorithm to form previously seen groups. Archived people are excluded from future shuffles but their history is still taken into account.
 
